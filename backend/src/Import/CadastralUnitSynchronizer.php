@@ -11,7 +11,8 @@ use ZipArchive;
 final class CadastralUnitSynchronizer
 {
     private const SOURCE_KEY = 'cadastral_units';
-    private const SOURCE_URL = 'https://services.cuzk.cz/sestavy/cis/UI_KATASTRALNI_UZEMI.zip';
+    private const CADASTRAL_UNITS_SOURCE_URL = 'https://services.cuzk.cz/sestavy/cis/UI_KATASTRALNI_UZEMI.zip';
+    private const MUNICIPALITIES_SOURCE_URL = 'https://services.cuzk.cz/sestavy/cis/UI_OBEC.zip';
 
     public function __construct(private PDO $pdo)
     {
@@ -19,8 +20,9 @@ final class CadastralUnitSynchronizer
 
     public function synchronize(): void
     {
-        $body = $this->download();
-        $hash = hash('sha256', $body);
+        $cadastralUnitsBody = $this->download(self::CADASTRAL_UNITS_SOURCE_URL);
+        $municipalitiesBody = $this->download(self::MUNICIPALITIES_SOURCE_URL);
+        $hash = hash('sha256', $cadastralUnitsBody . "\0" . $municipalitiesBody);
         $source = $this->pdo->prepare('SELECT source_hash FROM codelist_sources WHERE key = :key');
         $source->execute(['key' => self::SOURCE_KEY]);
         if ($source->fetchColumn() === $hash) {
@@ -30,7 +32,8 @@ final class CadastralUnitSynchronizer
             return;
         }
 
-        $units = $this->parse($body);
+        $municipalityDistricts = $this->parseMunicipalityDistricts($municipalitiesBody);
+        $units = $this->parse($cadastralUnitsBody, $municipalityDistricts);
         if ($units === []) {
             throw new RuntimeException('RÚIAN cadastral-unit catalogue is empty.');
         }
@@ -47,14 +50,19 @@ final class CadastralUnitSynchronizer
                     fetched_at = NOW(),
                     changed_at = NOW()
             SQL);
-            $upsertSource->execute(['key' => self::SOURCE_KEY, 'source_url' => self::SOURCE_URL, 'source_hash' => $hash]);
+            $upsertSource->execute([
+                'key' => self::SOURCE_KEY,
+                'source_url' => self::CADASTRAL_UNITS_SOURCE_URL . ';' . self::MUNICIPALITIES_SOURCE_URL,
+                'source_hash' => $hash,
+            ]);
 
             $upsertUnit = $this->pdo->prepare(<<<'SQL'
-                INSERT INTO cadastral_units (code, name, municipality_code, valid_from, valid_to, enabled, updated_at)
-                VALUES (:code, :name, :municipality_code, :valid_from, :valid_to, FALSE, NOW())
+                INSERT INTO cadastral_units (code, name, municipality_code, district_code, valid_from, valid_to, enabled, updated_at)
+                VALUES (:code, :name, :municipality_code, :district_code, :valid_from, :valid_to, FALSE, NOW())
                 ON CONFLICT (code) DO UPDATE SET
                     name = EXCLUDED.name,
                     municipality_code = EXCLUDED.municipality_code,
+                    district_code = EXCLUDED.district_code,
                     valid_from = EXCLUDED.valid_from,
                     valid_to = EXCLUDED.valid_to,
                     updated_at = NOW()
@@ -73,8 +81,11 @@ final class CadastralUnitSynchronizer
         fwrite(STDOUT, 'cadastral_units: imported ' . count($units) . ' entries.' . PHP_EOL);
     }
 
-    /** @return list<array{code:int,name:string,municipality_code:int,valid_from:?string,valid_to:?string}> */
-    private function parse(string $body): array
+    /**
+     * @param array<int, int> $municipalityDistricts municipality code => district code
+     * @return list<array{code:int,name:string,municipality_code:int,district_code:int,valid_from:?string,valid_to:?string}>
+     */
+    private function parse(string $body, array $municipalityDistricts): array
     {
         $path = tempnam(sys_get_temp_dir(), 'ruian-katastralni-uzemi-');
         if ($path === false || file_put_contents($path, $body) === false) {
@@ -112,16 +123,67 @@ final class CadastralUnitSynchronizer
                 if ($name === false || $name === '') {
                     throw new RuntimeException('RÚIAN cadastral-unit CSV contains an invalid name.');
                 }
+                $municipalityCode = (int) $row[2];
+                $districtCode = $municipalityDistricts[$municipalityCode] ?? null;
+                if ($districtCode === null) {
+                    throw new RuntimeException("RÚIAN municipality {$municipalityCode} has no district mapping.");
+                }
                 $units[] = [
                     'code' => (int) $row[0],
                     'name' => $name,
-                    'municipality_code' => (int) $row[2],
+                    'municipality_code' => $municipalityCode,
+                    'district_code' => $districtCode,
                     'valid_from' => $this->parseDate($row[3]),
                     'valid_to' => $this->parseDate($row[4]),
                 ];
             }
             fclose($stream);
             return $units;
+        } finally {
+            $zip->close();
+            @unlink($path);
+        }
+    }
+
+    /** @return array<int, int> municipality code => district code */
+    private function parseMunicipalityDistricts(string $body): array
+    {
+        $path = tempnam(sys_get_temp_dir(), 'ruian-obce-');
+        if ($path === false || file_put_contents($path, $body) === false) {
+            throw new RuntimeException('Cannot create a temporary RÚIAN municipality file.');
+        }
+
+        $zip = new ZipArchive();
+        try {
+            if ($zip->open($path) !== true) {
+                throw new RuntimeException('RÚIAN municipality catalogue is not a valid ZIP archive.');
+            }
+            $entryName = null;
+            for ($index = 0; $index < $zip->numFiles; $index++) {
+                $name = $zip->getNameIndex($index);
+                if ($name !== false && str_ends_with(strtolower($name), '.csv') && !str_contains($name, '..')) {
+                    $entryName = $name;
+                    break;
+                }
+            }
+            if ($entryName === null || ($stream = $zip->getStream($entryName)) === false) {
+                throw new RuntimeException('RÚIAN municipality ZIP does not contain a CSV file.');
+            }
+
+            $header = fgetcsv($stream, separator: ';', escape: '');
+            if ($header !== ['KOD', 'NAZEV', 'STATUS_KOD', 'POU_KOD', 'OKRES_KOD', 'CLENENI_SM_ROZSAH_KOD', 'CLENENI_SM_TYP_KOD', 'PLATI_OD', 'PLATI_DO', 'DATUM_VZNIKU']) {
+                throw new RuntimeException('RÚIAN municipality CSV has an unexpected header.');
+            }
+
+            $districts = [];
+            while (($row = fgetcsv($stream, separator: ';', escape: '')) !== false) {
+                if (count($row) !== 10 || !ctype_digit($row[0]) || !ctype_digit($row[4])) {
+                    throw new RuntimeException('RÚIAN municipality CSV contains an invalid row.');
+                }
+                $districts[(int) $row[0]] = (int) $row[4];
+            }
+            fclose($stream);
+            return $districts;
         } finally {
             $zip->close();
             @unlink($path);
@@ -140,13 +202,13 @@ final class CadastralUnitSynchronizer
         return $date->format('c');
     }
 
-    private function download(): string
+    private function download(string $url): string
     {
         $context = stream_context_create([
             'http' => ['timeout' => 90, 'header' => "User-Agent: JicinParcelMap/1.0\r\n"],
             'https' => ['timeout' => 90, 'header' => "User-Agent: JicinParcelMap/1.0\r\n"],
         ]);
-        $body = @file_get_contents(self::SOURCE_URL, false, $context);
+        $body = @file_get_contents($url, false, $context);
         if ($body === false) {
             throw new RuntimeException('Unable to download the RÚIAN cadastral-unit catalogue.');
         }

@@ -25,7 +25,6 @@ final class CodelistSynchronizer
             $this->synchronizeCuzkJson($key, $sourceUrl);
         }
         $this->synchronizeSnapshot(dirname(__DIR__, 2) . '/data/codelists/hilucs-2013-cpx-snapshot.json');
-        (new CadastralUnitSynchronizer($this->pdo))->synchronize();
     }
 
     private function synchronizeCuzkJson(string $key, string $sourceUrl): void

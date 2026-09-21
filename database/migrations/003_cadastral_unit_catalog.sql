@@ -1,6 +1,6 @@
--- The RÚIAN catalogue is nationwide. District is not part of its published
--- UI_KATASTRALNI_UZEMI feed, so it must stay nullable until a municipality /
--- district catalogue is synchronized as well.
+-- The RÚIAN catalogue is nationwide. District is derived by the explicit
+-- catalogue synchronizer from UI_OBEC, rather than manufactured as a schema
+-- default for every KÚ.
 ALTER TABLE cadastral_units
     ALTER COLUMN enabled SET DEFAULT FALSE,
     ALTER COLUMN district_code DROP NOT NULL,

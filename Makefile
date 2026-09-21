@@ -1,4 +1,4 @@
-.PHONY: up down migrate import-cpx import-codelists test
+.PHONY: up down migrate import-cpx import-codelists import-cadastral-units enable-jicin-district test
 
 up:
 	docker compose up --build
@@ -14,6 +14,12 @@ import-cpx:
 
 import-codelists:
 	docker compose run --rm backend php bin/import-codelists.php
+
+import-cadastral-units:
+	docker compose run --rm backend php bin/import-cadastral-units.php
+
+enable-jicin-district:
+	docker compose run --rm backend php bin/enable-district.php 3604
 
 test:
 	docker compose run --rm backend php bin/test.php

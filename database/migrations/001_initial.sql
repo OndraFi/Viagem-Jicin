@@ -35,15 +35,3 @@ CREATE TABLE IF NOT EXISTS parcels (
 
 CREATE INDEX IF NOT EXISTS parcels_geometry_gix ON parcels USING GIST (geometry);
 CREATE INDEX IF NOT EXISTS parcels_cadastral_unit_idx ON parcels (cadastral_unit_id);
-
-INSERT INTO cadastral_units (code, name, municipality_code, district_code, enabled)
-VALUES
-    (659541, 'Jičín', 572659, 3604, TRUE),
-    (641243, 'Holín', 572900, 3604, TRUE),
-    (776530, 'Valdice', 573701, 3604, TRUE),
-    (796123, 'Železnice', 573825, 3604, TRUE)
-ON CONFLICT (code) DO UPDATE
-SET name = EXCLUDED.name,
-    municipality_code = EXCLUDED.municipality_code,
-    district_code = EXCLUDED.district_code,
-    updated_at = NOW();

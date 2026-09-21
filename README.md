@@ -15,6 +15,8 @@ V druhém terminálu proveďte migraci a import dat:
 ```bash
 make migrate
 make import-codelists
+make import-cadastral-units
+make enable-jicin-district
 make import-cpx
 ```
 
@@ -35,7 +37,7 @@ První import stáhne CPX ZIP soubory ČÚZK do `data/cpx/`; adresář je zámě
 
 CPX: `https://services.cuzk.gov.cz/gml/inspire/cpx/epsg-5514/{KOD_KU}.zip`.
 
-České názvy druhu pozemku a způsobu využití se synchronizují z oficiálních JSON číselníků ČÚZK. HILUCS používá verzovaný snapshot podle nařízení EU 32013R1253 pro hodnoty skutečně přítomné v importovaných CPX datech. `make import-codelists` také načte celý oficiální katalog RÚIAN `UI_KATASTRALNI_UZEMI`; nové KÚ jsou vždy neaktivní, čtyři katastry MVP zůstávají aktivní. Příkaz každý zdroj stáhne, ale DB změní jen pokud se změní SHA-256 obsahu; ČÚZK pro JSON endpointy neposkytuje použitelný `ETag` ani `Last-Modified`.
+České názvy druhu pozemku a způsobu využití se synchronizují z oficiálních JSON číselníků ČÚZK. HILUCS používá verzovaný snapshot podle nařízení EU 32013R1253 pro hodnoty skutečně přítomné v importovaných CPX datech. Celý katalog KÚ se synchronizuje odděleně přes `make import-cadastral-units`, nikdy migrací; propojí číselníky RÚIAN `UI_KATASTRALNI_UZEMI` a `UI_OBEC`, takže u každého KÚ eviduje i okres. Všechny položky jsou při prvním načtení neaktivní. Pro aktivaci aktuálně platných KÚ okresu Jičín použijte `make enable-jicin-district`, poté `make import-cpx`. Každý synchronizační příkaz zdroj stáhne, ale DB změní jen pokud se změní SHA-256 obsahu; ČÚZK pro JSON endpointy neposkytuje použitelný `ETag` ani `Last-Modified`.
 
 Při více času bych doplnil předgenerování nízko-zoomových generalizovaných vrstev, trvalé metriky importů, vyhledání podle čísla parcely a volitelné vrstvy budov/adres z RÚIAN.
 
