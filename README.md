@@ -28,7 +28,8 @@ První import stáhne CPX ZIP soubory ČÚZK do `data/cpx/`; adresář je zámě
 
 - **CPX je jediný zdroj parcel.** Obsahuje geometrii i základní atributy včetně druhu a způsobu využití. RÚIAN je vědomě mimo MVP, aby nevznikly dva zdroje pravdy.
 - **Předem stažená data místo runtime WFS.** Importer stahuje CPX při explicitním importu, nikdy při pohybu po mapě.
-- **PostGIS + MVT.** Geometrie zůstávají v EPSG:5514, prostorový GiST index filtruje parcelní data pro konkrétní dlaždici. API vrací MVT, nikoli GeoJSON celého okresu.
+- **PostGIS + MVT.** Geometrie zůstávají v EPSG:5514, prostorový GiST index filtruje parcelní data pro konkrétní dlaždici. API vrací MVT, nikoli GeoJSON celého okresu. Dlaždice se od zoomu 13 diskově cacheují podle revize parcelních dat; každý úspěšný import KÚ revizi zvýší.
+- **Úroveň detailu podle zoomu.** Parcely se odebírají až od zoomu 13; jemné hranice se vykreslují od zoomu 15. Mapě se tak při pohledu na velké území neposílají ani nekreslí stovky tisíc polygonů.
 - **Vue 3 místo Next.js.** Zadání frontend neomezuje. Vue + Vite snižuje složitost SPA a umožňuje soustředit se na mapu, PHP a výkon.
 - **Transakční idempotentní import.** XML se streamově převede do dočasné dávky před transakcí. Následně se pro každé KÚ v jedné transakci nahradí jeho data `DELETE + INSERT`; chyba ponechá předchozí stav.
 - **KÚ jsou konfigurace databáze.** Další území se přidá vložením záznamu do `cadastral_units`; frontend ani importer neobsahují podmínky pro konkrétní název KÚ.

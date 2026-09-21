@@ -4,6 +4,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Import\CpxFeatureParser;
+use App\Http\TileCache;
 
 $xml = <<<'XML'
 <cp-ext:CadastralParcel xmlns:cp-ext="http://services.cuzk.cz/xsd/inspire/cp-ext/4.0" xmlns:cp="http://inspire.ec.europa.eu/schemas/cp/4.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gml="http://www.opengis.net/gml/3.2" gml:id="CPX.1">
@@ -21,3 +22,32 @@ if ($parcel['cpx_id'] !== 'CPX.1' || $parcel['area_value'] !== 100.0 || !str_con
     throw new RuntimeException('CPX parser regression test failed.');
 }
 fwrite(STDOUT, "CPX parser test passed." . PHP_EOL);
+
+$cachePath = sys_get_temp_dir() . '/jicin-mvt-cache-' . bin2hex(random_bytes(6));
+$cache = new TileCache($cachePath);
+$generated = 0;
+$first = $cache->remember(1, 13, 4445, 2762, function () use (&$generated): string {
+    $generated++;
+    return 'first tile';
+});
+$second = $cache->remember(1, 13, 4445, 2762, function () use (&$generated): string {
+    $generated++;
+    return 'unexpected tile';
+});
+$nextRevision = $cache->remember(2, 13, 4445, 2762, function () use (&$generated): string {
+    $generated++;
+    return 'next revision tile';
+});
+if ($first !== 'first tile' || $second !== 'first tile' || $nextRevision !== 'next revision tile' || $generated !== 2) {
+    throw new RuntimeException('MVT cache regression test failed.');
+}
+@unlink($cachePath . '/1/13/4445/2762.pbf');
+@unlink($cachePath . '/2/13/4445/2762.pbf');
+@rmdir($cachePath . '/1/13/4445');
+@rmdir($cachePath . '/2/13/4445');
+@rmdir($cachePath . '/1/13');
+@rmdir($cachePath . '/2/13');
+@rmdir($cachePath . '/1');
+@rmdir($cachePath . '/2');
+@rmdir($cachePath);
+fwrite(STDOUT, "MVT cache test passed." . PHP_EOL);

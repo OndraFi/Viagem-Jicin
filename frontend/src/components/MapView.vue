@@ -49,7 +49,7 @@ onMounted(() => {
   map = new maplibregl.Map({
     container: container.value,
     center: [15.351, 50.437],
-    zoom: 12,
+    zoom: 13,
     minZoom: 9,
     style: {
       version: 8,
@@ -71,18 +71,18 @@ onMounted(() => {
     map.addSource('parcels', {
       type: 'vector',
       tiles: [parcelTilesUrl],
-      minzoom: 9,
+      minzoom: 13,
       maxzoom: 22,
     })
     map.addLayer({
-      id: 'parcels-fill', type: 'fill', source: 'parcels', 'source-layer': 'parcels', minzoom: 11,
+      id: 'parcels-fill', type: 'fill', source: 'parcels', 'source-layer': 'parcels', minzoom: 13,
       paint: {
         'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#f59e0b', '#2563eb'],
         'fill-opacity': ['case', ['boolean', ['feature-state', 'selected'], false], 0.55, 0.18],
       },
     })
     map.addLayer({
-      id: 'parcels-line', type: 'line', source: 'parcels', 'source-layer': 'parcels', minzoom: 11,
+      id: 'parcels-line', type: 'line', source: 'parcels', 'source-layer': 'parcels', minzoom: 15,
       paint: {
         'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#b45309', '#1d4ed8'],
         'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 2, 0.7],

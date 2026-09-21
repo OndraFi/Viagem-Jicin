@@ -52,7 +52,7 @@ final class ParcelRepository
             WITH bounds AS (
                 SELECT ST_TileEnvelope(:z, :x, :y) AS geom_3857
             ), features AS (
-                SELECT p.id, p.label,
+                SELECT p.id,
                        ST_AsMVTGeom(ST_Transform(p.geometry, 3857), bounds.geom_3857, 4096, 64, TRUE) AS geom
                 FROM parcels p
                 JOIN cadastral_units cu ON cu.id = p.cadastral_unit_id
@@ -66,5 +66,10 @@ final class ParcelRepository
         $statement->execute(['z' => $z, 'x' => $x, 'y' => $y]);
         $tile = $statement->fetchColumn();
         return is_resource($tile) ? (string) stream_get_contents($tile) : (string) $tile;
+    }
+
+    public function tileRevision(): int
+    {
+        return (int) $this->pdo->query('SELECT revision FROM parcel_tile_state WHERE singleton = TRUE')->fetchColumn();
     }
 }

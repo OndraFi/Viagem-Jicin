@@ -197,6 +197,7 @@ final class CpxImporter
                 WHERE id = :id
             SQL);
             $update->execute(['source_version' => $sourceVersion, 'id' => $unitId]);
+            $this->pdo->exec('UPDATE parcel_tile_state SET revision = revision + 1, updated_at = NOW() WHERE singleton = TRUE');
             $this->pdo->commit();
         } catch (\Throwable $exception) {
             if ($this->pdo->inTransaction()) {

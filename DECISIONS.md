@@ -23,3 +23,7 @@ XML se připraví před DB transakcí. Poté `DELETE + INSERT` v jedné transakc
 ## ADR-006: Databázové číselníky s content-hash synchronizací
 
 `LandTypeValue` a `LandUseValue` se stahují z JSON endpointů ČÚZK a ukládají do `codelist_entries`. Zdroj nepředává použitelný `ETag` ani `Last-Modified`, proto importer porovnává SHA-256 odpovědi. HILUCS je pro aktuálně importované hodnoty uložen jako verzovaný snapshot podle nařízení EU 32013R1253; automatické čtení EU webového UI se vědomě nepoužívá.
+
+## ADR-007: Verzovaná disková cache MVT
+
+MVT se při prvním požadavku vytvoří z PostGIS a uloží do připojeného lokálního volume pod revizí parcelních dat a souřadnicemi `z/x/y`. Úspěšný import jednoho KÚ zvýší revizi ve stejné DB transakci jako výměna parcel, takže další požadavek nemůže použít dlaždici z předchozího datového stavu. Redis ani samostatný tile server pro lokální projekt nepřidáváme.
