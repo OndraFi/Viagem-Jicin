@@ -39,6 +39,8 @@ services:
       DB_USER: ${POSTGRES_USER:-jicin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-jicin}
       CORS_ORIGIN: http://localhost:5173
+      TILE_CACHE_TTL_SECONDS: ${TILE_CACHE_TTL_SECONDS:-900}
+      TILE_CACHE_MAX_BYTES: ${TILE_CACHE_MAX_BYTES:-268435456}
     ports:
       - "8080:8080"
     volumes:

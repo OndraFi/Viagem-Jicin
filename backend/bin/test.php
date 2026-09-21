@@ -24,7 +24,7 @@ if ($parcel['cpx_id'] !== 'CPX.1' || $parcel['area_value'] !== 100.0 || !str_con
 fwrite(STDOUT, "CPX parser test passed." . PHP_EOL);
 
 $cachePath = sys_get_temp_dir() . '/jicin-mvt-cache-' . bin2hex(random_bytes(6));
-$cache = new TileCache($cachePath);
+$cache = new TileCache($cachePath, ttlSeconds: 10, maxBytes: 100);
 $generated = 0;
 $first = $cache->remember(1, 13, 4445, 2762, function () use (&$generated): string {
     $generated++;
@@ -38,16 +38,37 @@ $nextRevision = $cache->remember(2, 13, 4445, 2762, function () use (&$generated
     $generated++;
     return 'next revision tile';
 });
-if ($first !== 'first tile' || $second !== 'first tile' || $nextRevision !== 'next revision tile' || $generated !== 2) {
+if ($first !== 'first tile' || $second !== 'first tile' || $nextRevision !== 'next revision tile' || $generated !== 2
+    || is_file($cachePath . '/1/13/4445/2762.pbf')) {
     throw new RuntimeException('MVT cache regression test failed.');
 }
-@unlink($cachePath . '/1/13/4445/2762.pbf');
-@unlink($cachePath . '/2/13/4445/2762.pbf');
-@rmdir($cachePath . '/1/13/4445');
-@rmdir($cachePath . '/2/13/4445');
-@rmdir($cachePath . '/1/13');
-@rmdir($cachePath . '/2/13');
-@rmdir($cachePath . '/1');
-@rmdir($cachePath . '/2');
-@rmdir($cachePath);
+
+$tilePath = $cachePath . '/2/13/4445/2762.pbf';
+touch($tilePath, time() - 11);
+$expired = $cache->remember(2, 13, 4445, 2762, function () use (&$generated): string {
+    $generated++;
+    return 'regenerated tile';
+});
+if ($expired !== 'regenerated tile' || $generated !== 3) {
+    throw new RuntimeException('MVT cache TTL regression test failed.');
+}
+
+$limitedPath = sys_get_temp_dir() . '/jicin-mvt-cache-limited-' . bin2hex(random_bytes(6));
+$limited = new TileCache($limitedPath, ttlSeconds: 900, maxBytes: 10);
+$limited->remember(1, 13, 1, 1, static fn (): string => str_repeat('a', 8));
+$limited->remember(1, 13, 1, 2, static fn (): string => str_repeat('b', 8));
+if (is_file($limitedPath . '/1/13/1/1.pbf') || !is_file($limitedPath . '/1/13/1/2.pbf')) {
+    throw new RuntimeException('MVT cache size-limit regression test failed.');
+}
+
+foreach ([$cachePath, $limitedPath] as $path) {
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST,
+    );
+    foreach ($iterator as $entry) {
+        $entry->isDir() ? @rmdir($entry->getPathname()) : @unlink($entry->getPathname());
+    }
+    @rmdir($path);
+}
 fwrite(STDOUT, "MVT cache test passed." . PHP_EOL);
