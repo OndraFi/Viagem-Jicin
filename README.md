@@ -61,9 +61,9 @@ Tento přístup odděluje náročný import od běžného pohybu po mapě a omez
 
 ## Rozhodnutí a omezení
 
-Podrobnější rozhodnutí jsou v [DECISIONS.md](DECISIONS.md): CPX jako jediný zdroj parcel, předem stažená data místo runtime WFS, PostGIS/MVT, Vue a transakční import.
+CPX jako jediný zdroj parcel, předem stažená data místo runtime WFS, PostGIS/MVT, Vue a transakční import.
 
-RÚIAN budovy, adresy ani parcely nejsou součástí MVP, aby nevznikl druhý zdroj pravdy. Volitelný import celého okresu používá pouze číselníky RÚIAN KÚ a obcí pro určení okresu:
+RÚIAN budovy, adresy ani parcely nejsou součástí MVP. Volitelný import celého okresu používá pouze číselníky RÚIAN KÚ a obcí pro určení okresu:
 
 ```bash
 docker compose run --rm backend php bin/import-jicin-district.php
