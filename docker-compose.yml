@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jicin_parcels}
+      POSTGRES_USER: ${POSTGRES_USER:-jicin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jicin}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-pgsql:host=postgres;port=5432;dbname=jicin_parcels}
+      DB_USER: ${POSTGRES_USER:-jicin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-jicin}
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/public:/app/public
+      - ./backend/bin:/app/bin
+      - ./data:/data
+      - ./database:/database:ro
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:

@@ -1,0 +1,13 @@
+{
+  "name": "viagem/jicin-parcel-map-api",
+  "description": "PHP API and CPX importer for the Jicin parcel map",
+  "type": "project",
+  "require": {
+    "php": "^8.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
