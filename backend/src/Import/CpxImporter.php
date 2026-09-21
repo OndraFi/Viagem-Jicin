@@ -20,9 +20,13 @@ final class CpxImporter
     ) {
     }
 
-    public function importEnabledUnits(bool $refresh = false): void
+    public function importEnabledUnits(bool $refresh = false, bool $onlyMissing = false): void
     {
-        $units = $this->pdo->query('SELECT id, code, name FROM cadastral_units WHERE enabled = TRUE ORDER BY code')->fetchAll();
+        $query = 'SELECT id, code, name FROM cadastral_units WHERE enabled = TRUE';
+        if ($onlyMissing) {
+            $query .= ' AND last_import_at IS NULL';
+        }
+        $units = $this->pdo->query($query . ' ORDER BY code')->fetchAll();
         foreach ($units as $unit) {
             $this->importUnit((int) $unit['id'], (int) $unit['code'], (string) $unit['name'], $refresh);
         }

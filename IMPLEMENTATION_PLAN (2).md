@@ -114,7 +114,6 @@ Požadavkem je nejprve dokončit MUST HAVE. Nadstavba nesmí rozbít jednoduchos
 
 - Docker
 - Docker Compose
-- Makefile
 - `.env.example`
 
 ---
@@ -462,7 +461,6 @@ project/
 ├── data/
 ├── docker/
 ├── docker-compose.yml
-├── Makefile
 ├── README.md
 └── DECISIONS.md
 ```
@@ -982,26 +980,16 @@ Minimálně:
 - `ADR-007`: generická konfigurace KÚ
 - `ADR-008`: transakční a idempotentní import
 
-### Makefile
+### Docker Compose bootstrap
 
-Například:
-
-```bash
-make up
-make down
-make migrate
-make import-cpx
-make test
-```
+`docker compose up -d` má spustit jednorázovou bootstrap službu, která provede migrace a připraví výchozí datový rozsah. Kontrolující nemá potřebovat Make ani ručně zadávat importní příkazy.
 
 ### Acceptance criteria
 
 Nový developer může:
 
 ```bash
-make up
-make migrate
-make import-cpx
+docker compose up -d
 ```
 
 a dostat funkční lokální aplikaci bez ruční konfigurace databáze.

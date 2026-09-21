@@ -4,23 +4,19 @@ Lokálně spustitelná mapa parcel nad čtyřmi katastrálními územími okresu
 
 ## Spuštění
 
-Potřebujete Docker Desktop a Make. Zkopírujte `.env.example` do `.env` (výchozí hodnoty fungují), pak spusťte:
+Potřebujete pouze Docker Desktop. Zkopírujte `.env.example` do `.env` (výchozí hodnoty fungují), pak spusťte:
 
 ```bash
-make up
+docker compose up -d
 ```
 
-V druhém terminálu proveďte migraci a import dat:
+Jednorázová služba `bootstrap` sama provede migrace, načte číselníky, nakonfiguruje čtyři KÚ MVP a stáhne jejich CPX data. Dokončení lze sledovat takto:
 
 ```bash
-make migrate
-make import-codelists
-make import-cadastral-units
-make enable-jicin-district
-make import-cpx
+docker compose logs -f bootstrap
 ```
 
-Frontend běží na `http://localhost:5173`, API na `http://localhost:8080/api/health`.
+Po zprávě `Bootstrap completed.` běží frontend na `http://localhost:5173` a API na `http://localhost:8080/api/health`. Při dalším `docker compose up -d` bootstrap nenačítá znovu již importované parcely.
 
 První import stáhne CPX ZIP soubory ČÚZK do `data/cpx/`; adresář je záměrně ignorovaný Gitem. Další import využije lokální cache. Pro vynucení nového stažení spusťte `docker compose run --rm backend php bin/import-cpx.php --refresh`.
 
@@ -38,14 +34,22 @@ První import stáhne CPX ZIP soubory ČÚZK do `data/cpx/`; adresář je zámě
 
 CPX: `https://services.cuzk.gov.cz/gml/inspire/cpx/epsg-5514/{KOD_KU}.zip`.
 
-České názvy druhu pozemku a způsobu využití se synchronizují z oficiálních JSON číselníků ČÚZK. HILUCS používá verzovaný snapshot podle nařízení EU 32013R1253 pro hodnoty skutečně přítomné v importovaných CPX datech. Celý katalog KÚ se synchronizuje odděleně přes `make import-cadastral-units`, nikdy migrací; propojí číselníky RÚIAN `UI_KATASTRALNI_UZEMI` a `UI_OBEC`, takže u každého KÚ eviduje i okres. Všechny položky jsou při prvním načtení neaktivní. Pro aktivaci aktuálně platných KÚ okresu Jičín použijte `make enable-jicin-district`, poté `make import-cpx`. Každý synchronizační příkaz zdroj stáhne, ale DB změní jen pokud se změní SHA-256 obsahu; ČÚZK pro JSON endpointy neposkytuje použitelný `ETag` ani `Last-Modified`.
+České názvy druhu pozemku a způsobu využití se synchronizují z oficiálních JSON číselníků ČÚZK. HILUCS používá verzovaný snapshot podle nařízení EU 32013R1253 pro hodnoty skutečně přítomné v importovaných CPX datech. Katalog KÚ se do výchozího MVP nestahuje. Je potřeba pouze pro volitelné rozšíření na okres Jičín; to používá číselníky RÚIAN `UI_KATASTRALNI_UZEMI` a `UI_OBEC` jen pro určení příslušnosti KÚ k okresu, nepřidává RÚIAN parcely, budovy ani adresy.
+
+### Volitelně: celý okres Jičín
+
+Tento příkaz stáhne katalog KÚ, aktivuje všechna aktuálně platná KÚ okresu Jičín a naimportuje pouze dosud chybějící CPX data:
+
+```bash
+docker compose run --rm backend php bin/import-jicin-district.php
+```
 
 Při více času bych doplnil předgenerování nízko-zoomových generalizovaných vrstev, trvalé metriky importů, vyhledání podle čísla parcely a volitelné vrstvy budov/adres z RÚIAN.
 
 ## Ověření
 
 ```bash
-make test
+docker compose run --rm backend php bin/test.php
 ```
 
 Před odevzdáním doporučuji naimportovat všechna čtyři KÚ, vyzkoušet rychlé posouvání/zoomování v Chrome i Firefoxu a zkontrolovat MVT SQL přes `EXPLAIN ANALYZE` na naplněné databázi.
