@@ -3,7 +3,14 @@
   "description": "PHP API and CPX importer for the Jicin parcel map",
   "type": "project",
   "require": {
-    "php": "^8.4"
+    "php": "^8.4",
+    "ext-dom": "*",
+    "ext-iconv": "*",
+    "ext-pdo": "*",
+    "ext-pdo_pgsql": "*",
+    "ext-xml": "*",
+    "ext-xmlreader": "*",
+  "ext-zip": "*"
   },
   "autoload": {
     "psr-4": {
