@@ -1,7 +1,11 @@
 .env
-data/cpx/
+.env.*
+!.env.example
+data/cpx/*
 !data/cpx/.gitkeep
 data/mvt-cache/
 frontend/node_modules/
 frontend/dist/
 backend/vendor/
+Thumbs.db
+.DS_Store

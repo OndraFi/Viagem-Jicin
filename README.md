@@ -4,7 +4,7 @@ Lokálně spustitelná mapa parcel nad čtyřmi katastrálními územími okresu
 
 ## Spuštění
 
-Potřebujete pouze Docker Desktop. Zkopírujte `.env.example` do `.env` (výchozí hodnoty fungují), pak spusťte:
+Potřebujete pouze Docker Desktop. Výchozí hodnoty jsou přímo v Compose, takže `.env` není potřeba; `.env.example` slouží jen pro případné přepsání konfigurace. Pak spusťte:
 
 ```bash
 docker compose up -d
