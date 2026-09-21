@@ -6,7 +6,7 @@ main, .map { width: 100vw; height: 100vh; }
 .title { position: absolute; z-index: 2; top: 1rem; left: 1rem; margin: 0; padding: .85rem 1rem; border-radius: .7rem; background: rgb(255 255 255 / 94%); box-shadow: 0 6px 24px rgb(15 23 42 / 15%); }
 h1, h2, p { margin: 0; }
 h1 { font-size: 1.2rem; } .title p, .eyebrow { color: #475569; font-size: .85rem; margin-top: .25rem; }
-.details { position: absolute; z-index: 2; top: 5rem; right: 1rem; width: min(23rem, calc(100vw - 2rem)); padding: 1.25rem; border-radius: .7rem; background: rgb(255 255 255 / 96%); box-shadow: 0 6px 24px rgb(15 23 42 / 15%); }
+.details { position: absolute; z-index: 2; top: 1rem; right: 5rem; width: min(23rem, calc(100vw - 6rem)); padding: 1.25rem; border-radius: .7rem; background: rgb(255 255 255 / 96%); box-shadow: 0 6px 24px rgb(15 23 42 / 15%); }
 .details h2 { margin: .25rem 0 1rem; font-size: 1.5rem; } .close { position: absolute; top: .5rem; right: .7rem; border: 0; background: transparent; font-size: 1.8rem; cursor: pointer; color: #475569; }
 dl { margin: 0; } dl > div { display: grid; grid-template-columns: 45% 55%; padding: .55rem 0; border-top: 1px solid #e2e8f0; } dt { color: #475569; } dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; } details { margin-top: 1rem; } summary { cursor: pointer; color: #334155; } details dl { margin-top: .5rem; font-size: .85rem; }.technical { font-size: .75rem; } .state { color: #475569; margin-top: .75rem; } .error { color: #b91c1c; }
-@media (max-width: 640px) { .title { right: 1rem; } .details { top: auto; bottom: 1rem; } }
+@media (max-width: 640px) { .title { right: 1rem; } .details { top: auto; right: 1rem; bottom: 1rem; width: min(23rem, calc(100vw - 2rem)); } }
