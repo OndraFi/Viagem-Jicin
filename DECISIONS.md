@@ -24,6 +24,6 @@ XML se připraví před DB transakcí. Poté `DELETE + INSERT` v jedné transakc
 
 `LandTypeValue` a `LandUseValue` se stahují z JSON endpointů ČÚZK a ukládají do `codelist_entries`. Zdroj nepředává použitelný `ETag` ani `Last-Modified`, proto importer porovnává SHA-256 odpovědi. HILUCS je pro aktuálně importované hodnoty uložen jako verzovaný snapshot podle nařízení EU 32013R1253; automatické čtení EU webového UI se vědomě nepoužívá.
 
-## ADR-007: Omezená verzovaná disková cache MVT
+## ADR-007: Nginx cache verzovaných MVT
 
-MVT se při prvním požadavku vytvoří z PostGIS a uloží do připojeného lokálního volume pod revizí parcelních dat a souřadnicemi `z/x/y`. Úspěšný import jednoho KÚ zvýší revizi ve stejné DB transakci jako výměna parcel, takže další požadavek nemůže použít dlaždici z předchozího datového stavu. Cache je omezená neaktivní TTL 15 minut a rozpočtem 256 MB; cache hit obnoví čas posledního použití a při překročení rozpočtu se odstraní nejdéle nepoužívané dlaždice. Redis ani samostatný tile server pro lokální projekt nepřidáváme.
+MVT se při prvním požadavku vytvoří z PostGIS a Nginx ji uloží do vlastního cache volume. Klíč URL obsahuje revizi parcelních dat a souřadnice `z/x/y`. Úspěšný import jednoho KÚ zvýší revizi ve stejné DB transakci jako výměna parcel, takže nová mapa žádá jiný, neměnný klíč a nemůže získat dlaždici z předchozího datového stavu. Nginx cache má výchozí neaktivní TTL 15 minut, limit 256 MB, LRU evikci a cache lock proti současnému generování téhož tile. PHP neimplementuje vlastní souborovou cache; Redis ani samostatný tile server pro lokální projekt nepřidáváme.

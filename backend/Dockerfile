@@ -1,6 +1,6 @@
 FROM composer:2 AS composer
 
-FROM php:8.4-cli
+FROM php:8.4-fpm
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libpq-dev libzip-dev libxml2-dev unzip curl \
     && docker-php-ext-install pdo_pgsql zip xml \
@@ -10,4 +10,3 @@ WORKDIR /app
 COPY composer.json ./
 RUN composer install --no-dev --no-interaction --no-progress
 COPY . .
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public", "public/router.php"]

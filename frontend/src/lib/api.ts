@@ -17,9 +17,23 @@ export interface Parcel {
   cadastral_unit_name: string
 }
 
+interface MapConfig {
+  tile_revision: number
+}
+
 const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
-export const parcelTilesUrl = `${apiUrl}/api/tiles/parcels/{z}/{x}/{y}.pbf`
+export function parcelTilesUrl(revision: number): string {
+  return `${apiUrl}/api/tiles/parcels/${revision}/{z}/{x}/{y}.pbf`
+}
+
+export async function getMapConfig(): Promise<MapConfig> {
+  const response = await fetch(`${apiUrl}/api/map-config`)
+  if (!response.ok) {
+    throw new Error('Konfiguraci parcelní mapy se nepodařilo načíst.')
+  }
+  return response.json() as Promise<MapConfig>
+}
 
 export async function getParcel(id: number, signal?: AbortSignal): Promise<Parcel> {
   const response = await fetch(`${apiUrl}/api/parcels/${id}`, { signal })

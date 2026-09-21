@@ -6,7 +6,7 @@ Výchozí rozsah pokrývá požadované minimum: katastrální území Jičín, 
 
 ## Technologie
 
-- Backend: čisté PHP 8.4.
+- Backend: čisté PHP 8.4-FPM za Nginx.
 - Databáze: PostgreSQL 17 s PostGIS 3.5.
 - Frontend: Vue 3, Vite, TypeScript a MapLibre GL JS.
 - Provoz: Docker Compose.
@@ -55,7 +55,7 @@ Mapa nepracuje s GeoJSON celého okresu. PHP API vytváří MVT dlaždice z Post
 - Geometrie zůstávají v EPSG:5514 a GiST index filtruje kandidátní parcely.
 - Do webové dlaždice se transformují až vybrané geometrie a API vrací jen ID a geometrii; detail se načítá až po kliknutí.
 - Parcely se stahují od zoomu 13, jemné hranice se kreslí až od zoomu 15.
-- Vytvořené MVT dlaždice se ukládají do diskové cache podle revize parcelních dat. Úspěšný import KÚ revizi zvýší, takže se nemůže vrátit zastaralá dlaždice. Cache má neaktivní TTL 15 minut a výchozí limit 256 MB; starší revize a nejdéle nepoužívané dlaždice se průběžně odstraňují.
+- Nginx ukládá vytvořené MVT dlaždice do vlastní diskové cache s výchozím limitem 256 MB a neaktivním TTL 15 minut. URL obsahuje revizi parcelních dat; úspěšný import KÚ ji zvýší, takže nová mapa žádá jiný, neměnný klíč cache a nemůže dostat zastaralou dlaždici. Nginx při zaplnění limitu vyřazuje nejdéle nepoužívané položky.
 
 Tento přístup odděluje náročný import od běžného pohybu po mapě a omezuje jak velikost přenosu, tak počet renderovaných prvků.
 
@@ -77,4 +77,4 @@ S více časem by dávalo smysl doplnit předgenerované generalizované geometr
 docker compose run --rm backend php bin/test.php
 ```
 
-Test ověřuje parsing CPX geometrie včetně vnitřního prstence a chování verzované MVT cache.
+Test ověřuje parsing CPX geometrie včetně vnitřního prstence. Chování MVT cache je obslouženo a omezeno přímo konfigurací Nginx.

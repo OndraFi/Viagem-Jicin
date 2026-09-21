@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as maplibregl from 'maplibre-gl'
 import type { MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl'
-import { getParcel, parcelTilesUrl, type Parcel } from '@/lib/api'
+import { getMapConfig, getParcel, parcelTilesUrl, type Parcel } from '@/lib/api'
 
 const emit = defineEmits<{
   select: [parcel: Parcel | null, loading: boolean, error: string | null]
@@ -66,11 +66,19 @@ onMounted(() => {
   })
   map.addControl(new maplibregl.NavigationControl(), 'top-right')
   map.addControl(new maplibregl.AttributionControl({ compact: true }))
-  map.on('load', () => {
+  map.on('load', async () => {
+    if (!map) return
+    let tileRevision: number
+    try {
+      tileRevision = (await getMapConfig()).tile_revision
+    } catch (error) {
+      console.error(error)
+      return
+    }
     if (!map) return
     map.addSource('parcels', {
       type: 'vector',
-      tiles: [parcelTilesUrl],
+      tiles: [parcelTilesUrl(tileRevision)],
       minzoom: 13,
       maxzoom: 22,
     })

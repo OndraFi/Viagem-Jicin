@@ -39,22 +39,32 @@ services:
       DB_USER: ${POSTGRES_USER:-jicin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-jicin}
       CORS_ORIGIN: http://localhost:5173
-      TILE_CACHE_TTL_SECONDS: ${TILE_CACHE_TTL_SECONDS:-900}
-      TILE_CACHE_MAX_BYTES: ${TILE_CACHE_MAX_BYTES:-268435456}
-    ports:
-      - "8080:8080"
     volumes:
       - ./backend/src:/app/src
       - ./backend/public:/app/public
       - ./backend/bin:/app/bin
       - ./backend/data:/app/data:ro
-      - ./data:/data
       - ./database:/database:ro
     depends_on:
       postgres:
         condition: service_healthy
       bootstrap:
         condition: service_completed_successfully
+
+  nginx:
+    image: nginx:1.27-alpine
+    environment:
+      NGINX_CACHE_MAX_SIZE: ${NGINX_CACHE_MAX_SIZE:-256m}
+      NGINX_CACHE_INACTIVE: ${NGINX_CACHE_INACTIVE:-15m}
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./backend/public:/app/public:ro
+      - nginx-mvt-cache:/var/cache/nginx
+    depends_on:
+      backend:
+        condition: service_started
 
   frontend:
     build: ./frontend
@@ -66,8 +76,9 @@ services:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
-      backend:
+      nginx:
         condition: service_started
 
 volumes:
   postgres-data:
+  nginx-mvt-cache:

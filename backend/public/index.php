@@ -24,12 +24,14 @@ try {
         Response::json(['error' => 'Method not allowed'], 405);
     } elseif ($path === '/api/health') {
         Response::json($controller->health());
+    } elseif ($path === '/api/map-config') {
+        Response::json($controller->mapConfig());
     } elseif ($path === '/api/cadastral-units') {
         Response::json($controller->cadastralUnits());
     } elseif (preg_match('#^/api/parcels/(\\d+)$#', $path, $matches)) {
         Response::json($controller->parcel((int) $matches[1]));
-    } elseif (preg_match('#^/api/tiles/parcels/(\\d+)/(\\d+)/(\\d+)\\.pbf$#', $path, $matches)) {
-        Response::mvt($controller->tile((int) $matches[1], (int) $matches[2], (int) $matches[3]));
+    } elseif (preg_match('#^/api/tiles/parcels/(\\d+)/(\\d+)/(\\d+)/(\\d+)\\.pbf$#', $path, $matches)) {
+        Response::mvt($controller->tile((int) $matches[1], (int) $matches[2], (int) $matches[3], (int) $matches[4]));
     } else {
         Response::json(['error' => 'Not found'], 404);
     }

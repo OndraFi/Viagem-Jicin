@@ -17,7 +17,9 @@ final class Response
     public static function mvt(string $tile): never
     {
         header('Content-Type: application/vnd.mapbox-vector-tile');
-        header('Cache-Control: public, max-age=300');
+        // The parcel dataset revision is part of the tile URL, therefore a tile
+        // URL names immutable content. Nginx bounds disk retention separately.
+        header('Cache-Control: public, max-age=31536000, immutable');
         echo $tile;
         exit;
     }

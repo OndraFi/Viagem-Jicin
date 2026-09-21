@@ -1,0 +1,44 @@
+fastcgi_cache_path /var/cache/nginx/mvt levels=1:2 keys_zone=mvt:10m max_size=${NGINX_CACHE_MAX_SIZE} inactive=${NGINX_CACHE_INACTIVE} use_temp_path=off;
+
+server {
+    listen 80;
+    server_name _;
+    root /app/public;
+
+    location ~ ^/api/tiles/parcels/\d+/\d+/\d+/\d+\.pbf$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_pass backend:9000;
+
+        fastcgi_cache mvt;
+        fastcgi_cache_key "$scheme$request_method$host$request_uri";
+        fastcgi_cache_methods GET HEAD;
+        fastcgi_cache_valid 200 365d;
+        fastcgi_cache_lock on;
+        fastcgi_cache_use_stale updating error timeout;
+        add_header X-Cache-Status $upstream_cache_status always;
+    }
+
+    location /api/ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_pass backend:9000;
+    }
+
+    location / {
+        try_files $uri @front_controller;
+    }
+
+    location @front_controller {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_pass backend:9000;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+}
