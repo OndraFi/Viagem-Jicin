@@ -19,3 +19,7 @@ Frontend zadání neurčuje. Vue používáme proto, že je v něm implementáto
 ## ADR-005: Transakční import po KÚ
 
 XML se připraví před DB transakcí. Poté `DELETE + INSERT` v jedné transakci nahradí data konkrétního KÚ; selhání uchová předchozí konzistentní data.
+
+## ADR-006: Databázové číselníky s content-hash synchronizací
+
+`LandTypeValue` a `LandUseValue` se stahují z JSON endpointů ČÚZK a ukládají do `codelist_entries`. Zdroj nepředává použitelný `ETag` ani `Last-Modified`, proto importer porovnává SHA-256 odpovědi. HILUCS je pro aktuálně importované hodnoty uložen jako verzovaný snapshot podle nařízení EU 32013R1253; automatické čtení EU webového UI se vědomě nepoužívá.

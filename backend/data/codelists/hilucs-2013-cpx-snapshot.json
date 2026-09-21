@@ -1,0 +1,144 @@
+{
+  "key": "hilucs",
+  "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32013R1253",
+  "source_version": "Commission Regulation (EU) No 1253/2013, Annex IV, 4.3.2.1",
+  "scope": "HILUCS values observed in the CPX datasets imported by this application",
+  "entries": [
+    {
+      "code": "1_1_1_CommercialAgriculturalProduction",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/1_1_1_CommercialAgriculturalProduction",
+      "label_cs": "Komerční zemědělská produkce",
+      "label_en": "commercial agricultural production",
+      "definition": "Arable land, permanent crops and grasslands in agricultural use.",
+      "status": "VALID"
+    },
+    {
+      "code": "1_1_Agriculture",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/1_1_Agriculture",
+      "label_cs": "Zemědělství",
+      "label_en": "agriculture",
+      "definition": "Production of crop and animal products.",
+      "status": "VALID"
+    },
+    {
+      "code": "1_2_Forestry",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/1_2_Forestry",
+      "label_cs": "Lesnictví",
+      "label_en": "forestry",
+      "definition": "Forestry activities.",
+      "status": "VALID"
+    },
+    {
+      "code": "5_ResidentialUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/5_ResidentialUse",
+      "label_cs": "Bydlení",
+      "label_en": "residential use",
+      "definition": "Areas used dominantly for housing of people.",
+      "status": "VALID"
+    },
+    {
+      "code": "5_1_PermanentResidentialUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/5_1_PermanentResidentialUse",
+      "label_cs": "Trvalé bydlení",
+      "label_en": "permanent residential use",
+      "definition": "Residential areas used as permanent residence.",
+      "status": "VALID"
+    },
+    {
+      "code": "5_3_OtherResidentialUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/5_3_OtherResidentialUse",
+      "label_cs": "Jiné bydlení",
+      "label_en": "other residential use",
+      "definition": "Areas dominantly used for temporary dwellings or holiday residences.",
+      "status": "VALID"
+    },
+    {
+      "code": "3_3_5_OtherCommunityServices",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/3_3_5_OtherCommunityServices",
+      "label_cs": "Ostatní veřejné služby",
+      "label_en": "other community services",
+      "definition": "Other community services, for example cemeteries.",
+      "status": "VALID"
+    },
+    {
+      "code": "3_4_3_SportsInfrastructure",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/3_4_3_SportsInfrastructure",
+      "label_cs": "Sportovní infrastruktura",
+      "label_en": "sports infrastructure",
+      "definition": "Areas used for sports infrastructure.",
+      "status": "VALID"
+    },
+    {
+      "code": "3_4_4_OpenAirRecreationalAreas",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/3_4_4_OpenAirRecreationalAreas",
+      "label_cs": "Venkovní rekreační plochy",
+      "label_en": "open air recreational areas",
+      "definition": "Open-air areas used for recreation.",
+      "status": "VALID"
+    },
+    {
+      "code": "4_1_1_RoadTransport",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/4_1_1_RoadTransport",
+      "label_cs": "Silniční doprava",
+      "label_en": "road transport",
+      "definition": "Areas used for road transport.",
+      "status": "VALID"
+    },
+    {
+      "code": "4_1_5_OtherTransportNetwork",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/4_1_5_OtherTransportNetwork",
+      "label_cs": "Ostatní dopravní síť",
+      "label_en": "other transport network",
+      "definition": "Areas used for other transport networks.",
+      "status": "VALID"
+    },
+    {
+      "code": "4_3_2_WaterAndSewageInfrastructure",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/4_3_2_WaterAndSewageInfrastructure",
+      "label_cs": "Vodohospodářská a kanalizační infrastruktura",
+      "label_en": "water and sewage infrastructure",
+      "definition": "Infrastructure for water supply and sewage.",
+      "status": "VALID"
+    },
+    {
+      "code": "4_3_3_WasteTreatment",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/4_3_3_WasteTreatment",
+      "label_cs": "Zpracování odpadu",
+      "label_en": "waste treatment",
+      "definition": "Areas used for waste treatment.",
+      "status": "VALID"
+    },
+    {
+      "code": "6_3_2_WaterAreasNotInOtherEconomicUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/6_3_2_WaterAreasNotInOtherEconomicUse",
+      "label_cs": "Vodní plochy bez jiného ekonomického využití",
+      "label_en": "water areas not in other economic use",
+      "definition": "Water areas which are not in any other socio-economic use.",
+      "status": "VALID"
+    },
+    {
+      "code": "6_3_NaturalAreasNotInOtherEconomicUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/6_3_NaturalAreasNotInOtherEconomicUse",
+      "label_cs": "Přírodní plochy bez jiného ekonomického využití",
+      "label_en": "natural areas not in other economic use",
+      "definition": "Areas in a natural state and not in other economic use.",
+      "status": "VALID"
+    },
+    {
+      "code": "6_5_AreasWithoutAnySpecifiedPlannedUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/6_5_AreasWithoutAnySpecifiedPlannedUse",
+      "label_cs": "Plochy bez stanoveného plánovaného využití",
+      "label_en": "areas without any specified planned use",
+      "definition": "Areas without any specified planned use.",
+      "status": "VALID"
+    },
+    {
+      "code": "6_6_NotKnownUse",
+      "source_uri": "http://inspire.ec.europa.eu/codelist/HILUCSValue/6_6_NotKnownUse",
+      "label_cs": "Neznámé využití",
+      "label_en": "not known use",
+      "definition": "Areas where the land use is unknown.",
+      "status": "VALID"
+    }
+  ]
+}

@@ -6,7 +6,9 @@ export interface Parcel {
   land_type_code: string | null
   land_type_label: string | null
   land_use_code: string | null
+  land_use_label: string | null
   hilucs_land_type: string | null
+  hilucs_land_type_label: string | null
   hilucs_land_use: string | null
   cpx_id: string
   begin_lifespan_version: string | null

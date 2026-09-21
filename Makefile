@@ -1,4 +1,4 @@
-.PHONY: up down migrate import-cpx test
+.PHONY: up down migrate import-cpx import-codelists test
 
 up:
 	docker compose up --build
@@ -12,6 +12,8 @@ migrate:
 import-cpx:
 	docker compose run --rm backend php bin/import-cpx.php
 
+import-codelists:
+	docker compose run --rm backend php bin/import-codelists.php
+
 test:
 	docker compose run --rm backend php bin/test.php
-

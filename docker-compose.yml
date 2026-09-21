@@ -23,6 +23,7 @@ services:
       - ./backend/src:/app/src
       - ./backend/public:/app/public
       - ./backend/bin:/app/bin
+      - ./backend/data:/app/data:ro
       - ./data:/data
       - ./database:/database:ro
     depends_on:

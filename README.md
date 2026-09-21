@@ -14,6 +14,7 @@ V druhém terminálu proveďte migraci a import dat:
 
 ```bash
 make migrate
+make import-codelists
 make import-cpx
 ```
 
@@ -34,7 +35,7 @@ První import stáhne CPX ZIP soubory ČÚZK do `data/cpx/`; adresář je zámě
 
 CPX: `https://services.cuzk.gov.cz/gml/inspire/cpx/epsg-5514/{KOD_KU}.zip`.
 
-Český název druhu pozemku je mapovaný z oficiálního číselníku ČÚZK. HILUCS a způsob využití zůstávají v MVP jako ověřené zdrojové kódy, protože pro ně není přidán český lokální číselník.
+České názvy druhu pozemku a způsobu využití se synchronizují z oficiálních JSON číselníků ČÚZK. HILUCS používá verzovaný snapshot podle nařízení EU 32013R1253 pro hodnoty skutečně přítomné v importovaných CPX datech. `make import-codelists` vždy zdroj stáhne, ale DB změní jen pokud se změní SHA-256 obsahu; ČÚZK pro tyto endpointy neposkytuje `ETag` ani `Last-Modified`.
 
 Při více času bych doplnil předgenerování nízko-zoomových generalizovaných vrstev, trvalé metriky importů, vyhledání podle čísla parcely a volitelné vrstvy budov/adres z RÚIAN.
 

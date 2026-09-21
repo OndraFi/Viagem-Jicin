@@ -26,14 +26,16 @@ function value(value: string | null): string {
         <div><dt>Výměra</dt><dd>{{ Number(parcel.area_value).toLocaleString('cs-CZ') }} m²</dd></div>
         <div><dt>Katastrální území</dt><dd>{{ parcel.cadastral_unit_name }}</dd></div>
         <div><dt>Druh pozemku</dt><dd>{{ value(parcel.land_type_label) }}</dd></div>
-        <div><dt>Způsob využití</dt><dd>{{ value(parcel.land_use_code) }}</dd></div>
-        <div><dt>HILUCS</dt><dd>{{ value(parcel.hilucs_land_type) }}</dd></div>
+        <div><dt>Způsob využití</dt><dd>{{ value(parcel.land_use_label) }}</dd></div>
+        <div><dt>HILUCS</dt><dd>{{ value(parcel.hilucs_land_type_label) }}</dd></div>
       </dl>
       <details>
         <summary>Technické informace</summary>
         <dl>
           <div><dt>CPX ID</dt><dd class="technical">{{ parcel.cpx_id }}</dd></div>
           <div><dt>Katastrální reference</dt><dd>{{ value(parcel.national_cadastral_reference) }}</dd></div>
+          <div><dt>Kód využití</dt><dd>{{ value(parcel.land_use_code) }}</dd></div>
+          <div><dt>HILUCS kód</dt><dd>{{ value(parcel.hilucs_land_type) }}</dd></div>
         </dl>
       </details>
     </template>
