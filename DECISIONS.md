@@ -26,4 +26,4 @@ XML se připraví před DB transakcí. Poté `DELETE + INSERT` v jedné transakc
 
 ## ADR-007: Omezená verzovaná disková cache MVT
 
-MVT se při prvním požadavku vytvoří z PostGIS a uloží do připojeného lokálního volume pod revizí parcelních dat a souřadnicemi `z/x/y`. Úspěšný import jednoho KÚ zvýší revizi ve stejné DB transakci jako výměna parcel, takže další požadavek nemůže použít dlaždici z předchozího datového stavu. Cache je omezená TTL 15 minut a rozpočtem 256 MB; při zápisu se odstraní vypršené položky, jiné revize a při překročení rozpočtu nejstarší dlaždice. Redis ani samostatný tile server pro lokální projekt nepřidáváme.
+MVT se při prvním požadavku vytvoří z PostGIS a uloží do připojeného lokálního volume pod revizí parcelních dat a souřadnicemi `z/x/y`. Úspěšný import jednoho KÚ zvýší revizi ve stejné DB transakci jako výměna parcel, takže další požadavek nemůže použít dlaždici z předchozího datového stavu. Cache je omezená neaktivní TTL 15 minut a rozpočtem 256 MB; cache hit obnoví čas posledního použití a při překročení rozpočtu se odstraní nejdéle nepoužívané dlaždice. Redis ani samostatný tile server pro lokální projekt nepřidáváme.

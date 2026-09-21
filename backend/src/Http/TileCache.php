@@ -11,8 +11,9 @@ use RuntimeException;
 /**
  * Bounded disk cache keyed by the parcel dataset revision and MVT coordinates.
  *
- * A revision makes data invalidation immediate after an import. TTL and the
- * size budget keep the cache from becoming a second, unbounded copy of the map.
+ * A revision makes data invalidation immediate after an import. The TTL is
+ * measured since the last cache hit; it and the size budget keep the cache
+ * from becoming a second, unbounded copy of the map.
  */
 final class TileCache
 {
@@ -64,7 +65,13 @@ final class TileCache
             return null;
         }
         $tile = @file_get_contents($path);
-        return $tile === false ? null : $tile;
+        if ($tile === false) {
+            return null;
+        }
+        // mtime is deliberately the "last used" timestamp: it implements a
+        // sliding TTL and lets the size limit evict least-recently-used tiles.
+        @touch($path);
+        return $tile;
     }
 
     /** @param callable(): void $callback */

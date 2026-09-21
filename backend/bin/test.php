@@ -54,10 +54,15 @@ if ($expired !== 'regenerated tile' || $generated !== 3) {
 }
 
 $limitedPath = sys_get_temp_dir() . '/jicin-mvt-cache-limited-' . bin2hex(random_bytes(6));
-$limited = new TileCache($limitedPath, ttlSeconds: 900, maxBytes: 10);
+$limited = new TileCache($limitedPath, ttlSeconds: 900, maxBytes: 16);
 $limited->remember(1, 13, 1, 1, static fn (): string => str_repeat('a', 8));
 $limited->remember(1, 13, 1, 2, static fn (): string => str_repeat('b', 8));
-if (is_file($limitedPath . '/1/13/1/1.pbf') || !is_file($limitedPath . '/1/13/1/2.pbf')) {
+$oldTilePath = $limitedPath . '/1/13/1/2.pbf';
+touch($oldTilePath, time() - 60);
+$limited->remember(1, 13, 1, 1, static fn (): string => 'unexpected cache miss');
+$limited->remember(1, 13, 1, 3, static fn (): string => str_repeat('c', 8));
+if (!is_file($limitedPath . '/1/13/1/1.pbf') || is_file($oldTilePath)
+    || !is_file($limitedPath . '/1/13/1/3.pbf')) {
     throw new RuntimeException('MVT cache size-limit regression test failed.');
 }
 

@@ -55,7 +55,7 @@ Mapa nepracuje s GeoJSON celého okresu. PHP API vytváří MVT dlaždice z Post
 - Geometrie zůstávají v EPSG:5514 a GiST index filtruje kandidátní parcely.
 - Do webové dlaždice se transformují až vybrané geometrie a API vrací jen ID a geometrii; detail se načítá až po kliknutí.
 - Parcely se stahují od zoomu 13, jemné hranice se kreslí až od zoomu 15.
-- Vytvořené MVT dlaždice se ukládají do diskové cache podle revize parcelních dat. Úspěšný import KÚ revizi zvýší, takže se nemůže vrátit zastaralá dlaždice. Cache má TTL 15 minut a výchozí limit 256 MB; starší revize a nejstarší dlaždice se průběžně odstraňují.
+- Vytvořené MVT dlaždice se ukládají do diskové cache podle revize parcelních dat. Úspěšný import KÚ revizi zvýší, takže se nemůže vrátit zastaralá dlaždice. Cache má neaktivní TTL 15 minut a výchozí limit 256 MB; starší revize a nejdéle nepoužívané dlaždice se průběžně odstraňují.
 
 Tento přístup odděluje náročný import od běžného pohybu po mapě a omezuje jak velikost přenosu, tak počet renderovaných prvků.
 
